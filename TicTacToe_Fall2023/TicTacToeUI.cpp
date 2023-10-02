@@ -2,6 +2,7 @@
 
 // TicTacToeUI.cpp
 //   Encapsulates the methods to read & write to the UI (for now, the console)
+//   <blank line>
 
 #include <iostream>
 #include <stdlib.h>
