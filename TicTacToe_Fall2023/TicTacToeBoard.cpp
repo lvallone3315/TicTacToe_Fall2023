@@ -57,6 +57,10 @@ bool TicTacToeBoard::writeSquare(int row, int col, Player currentPlayer) {
 
 // Returns character (ie player marker) in the given row/col
 char TicTacToeBoard::getSquareContents(int row, int col) {
+	if ((row >= BOARD_NUM_ROWS) || (col >= BOARD_NUM_COLS)) {
+		throw std::invalid_argument("Invalid row or column passed to getSquareContents\n");
+	}
+	// else - good row & column passed
 	return playerMap(board[row][col]);
 }
 
