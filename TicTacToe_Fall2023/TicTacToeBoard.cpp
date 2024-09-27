@@ -56,7 +56,7 @@ bool TicTacToeBoard::writeSquare(int row, int col, Player currentPlayer) {
 }
 
 // Returns character (ie player marker) in the given row/col, throws exception if args invalid
-char TicTacToeBoard::getSquareContents(int row, int col) {
+char TicTacToeBoard::getSquareContents(int row, int col) const {
 	if ((row >= BOARD_NUM_ROWS) || (col >= BOARD_NUM_COLS)) {
 		throw std::invalid_argument("Invalid row or column passed to getSquareContents\n");
 	}
@@ -65,12 +65,12 @@ char TicTacToeBoard::getSquareContents(int row, int col) {
 }
 
 // Returns the current player (enum)
-TicTacToeBoard::Player TicTacToeBoard::getPlayer() {
+TicTacToeBoard::Player TicTacToeBoard::getPlayer() const {
 	return player;
 }
 
 // Returns player name (character)
-char TicTacToeBoard::getPlayerName() {
+char TicTacToeBoard::getPlayerName() const {
 	return playerMap(player);
 }
 
@@ -85,13 +85,13 @@ TicTacToeBoard::Player TicTacToeBoard::nextPlayer() {
 
 // Return true if specified player has won the game
 //   ToDo - tighten up this check - works but could be cleaner
-bool TicTacToeBoard::isWinner(Player playerToCheck) {
+bool TicTacToeBoard::isWinner(Player playerToCheck) const {
 	// check rows
 	for (int r = 0; r < BOARD_NUM_ROWS; r++) {
 		if ((board[r][0] == playerToCheck) &&
 			(board[r][1] == playerToCheck) &&
 			(board[r][2] == playerToCheck))
-			return(true);
+			return true;
 	}
 
 	// check columns
@@ -99,36 +99,36 @@ bool TicTacToeBoard::isWinner(Player playerToCheck) {
 		if ((board[0][c] == playerToCheck) &&
 			(board[1][c] == playerToCheck) &&
 			(board[2][c] == playerToCheck))
-			return(true);
+			return true;
 	}
 
 	// check diagonals
 	if ((board[0][0] == playerToCheck) &&
 		(board[1][1] == playerToCheck) &&
 		(board[2][2] == playerToCheck))
-			return(true);
+		return true;
 	// reverse
 	if ((board[0][2] == playerToCheck) &&
 		(board[1][1] == playerToCheck) &&
 		(board[2][0] == playerToCheck))
-			return(true);
+		return true;
 
-	return(false);              // no winner this time
+	return false;              // no winner this time
 }
 
 
 // Return true if game is a Draw - all squares filled and no one has won
-bool TicTacToeBoard::isDraw() {
+bool TicTacToeBoard::isDraw() const {
 	if ((takenSquareCount >= BOARD_NUM_ROWS * BOARD_NUM_COLS) && !this->isWinner(X) && !this->isWinner(O)) {
-		return (true);
+		return true;
 	}
 	else
-		return(false);
+		return false;
 }
 
 // map enum to character
-char TicTacToeBoard::playerMap(Player player) {
-	switch (player) {
+char TicTacToeBoard::playerMap(Player playerEnum) const {
+	switch (playerEnum) {
 	case X:
 		return 'X';
 	case O:

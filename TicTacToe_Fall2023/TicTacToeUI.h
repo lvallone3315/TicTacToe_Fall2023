@@ -16,10 +16,11 @@ class TicTacToeUI
 {
 public:
 	TicTacToeUI();
-	int writeOutput(char* output, char arg);
-	int writeOutput(char* output, int arg1, int arg2);
-	int writeOutput(char* output);
-	string getUserInput(char* prompt);
-	int writeTicTacToeBoard(TicTacToeBoard board);
+	int writeOutput(char* output, char arg) const;
+	int writeOutput(char* output, int arg1, int arg2) const;
+	int writeOutput(char* output) const;
+	string getUserInput(char* prompt) const;
+
+	int writeTicTacToeBoard(TicTacToeBoard board) const;
 };
 

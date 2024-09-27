@@ -37,7 +37,7 @@ TicTacToeUI::TicTacToeUI() {
 //   waits for user input, echoes the input & returns it to caller
 //   note: does not trim leading white space
 //
-string TicTacToeUI::getUserInput(char* prompt) {
+string TicTacToeUI::getUserInput(char* prompt) const {
     string userInput;
 
     writeOutput(prompt);
@@ -49,12 +49,12 @@ string TicTacToeUI::getUserInput(char* prompt) {
 
 // writeOutput() - writes parameter to output
 //   
-int TicTacToeUI::writeOutput(char* output) {
+int TicTacToeUI::writeOutput(char* output) const {
     cout << output;
     return 0;
 }
 
-int TicTacToeUI::writeOutput(char *output, char arg) {
+int TicTacToeUI::writeOutput(char *output, char arg) const {
     const int MAX_CHARS = 128;
     char userString[MAX_CHARS];
 
@@ -63,7 +63,7 @@ int TicTacToeUI::writeOutput(char *output, char arg) {
     return 0;
 }
 
-int TicTacToeUI::writeOutput(char* output, int arg1, int arg2) {
+int TicTacToeUI::writeOutput(char* output, int arg1, int arg2) const {
     const int MAX_CHARS = 128;
     char userString[MAX_CHARS];
 
@@ -75,7 +75,7 @@ int TicTacToeUI::writeOutput(char* output, int arg1, int arg2) {
 // Draws board based on data from board class
 // ToDo - find alternative to hard coding last row & column to avoid drawing delimiter - e.g. |
 //
-int TicTacToeUI::writeTicTacToeBoard(TicTacToeBoard board) {
+int TicTacToeUI::writeTicTacToeBoard(TicTacToeBoard board) const {
     // loop thru all rows and all columns, retrieving contents from board class & displaying
     cout << "\n";
     for (int r = 0; r < BOARD_NUM_ROWS; r++) {
@@ -90,5 +90,5 @@ int TicTacToeUI::writeTicTacToeBoard(TicTacToeBoard board) {
         else
             cout << "\n\n";
     }
-    return(0);
+    return 0;
 }
