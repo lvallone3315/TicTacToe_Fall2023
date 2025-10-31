@@ -5,6 +5,10 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+// TicTacToe automated unit test example (starting place)
+//   ToDo: remove max board & column hardcoding (ideally - retrieve from source code)
+//   ToDo: more comments
+
 namespace TicTacToeTest
 {
 	TEST_CLASS(TicTacToeTest)
@@ -22,18 +26,37 @@ namespace TicTacToeTest
 
 		TEST_METHOD_INITIALIZE(TestSetup) {
 			// this method is run prior to EVERY test case inside the class (ie this file)
-			Logger::WriteMessage("Initializing Board object.");
+			Logger::WriteMessage("Initializing Board object.\n");
 			board = TicTacToeBoard();          // reinitialize board
 		}
 
+		//   ***   Unit tests ***
+		//   verify X is first player after board initializes
 		TEST_METHOD(GameStartPlayerX)
 		{
 			Logger::WriteMessage("Testing X is selected as first player\n");
+			// verify X is to play, O is NOT to play
 			Assert::AreEqual(board.getPlayerName(), 'X');
 			Assert::AreNotEqual(board.getPlayerName(), 'O');
 		}
 
-		TEST_METHOD(TestMoves) {
+
+		// Game start check - all squares should be empty & no-one has won
+		TEST_METHOD(SquaresEmptyAndNoWonHasWon) {
+
+			Logger::WriteMessage("Game start: testing neither X or O has won\n");
+			Assert::IsFalse(board.isWinner(TicTacToeBoard::X), L"Game start: X should not have won");
+			Assert::IsFalse(board.isWinner(TicTacToeBoard::O), L"Game start: O should not have won");
+
+			Logger::WriteMessage("Verify all squares are empty\n");
+			for (int row = 0; row < 2; row++) {
+				for (int column = 0; column < 2; column++) {
+					Assert::IsTrue(board.isSquareEmpty(0, 0), L"Square should be empty, but isn't");
+				}
+			}  // end verifying all game squares empty
+		}
+
+		TEST_METHOD(TestRandomMoves) {
 			//  Methods used in the following test case:
 			//    :writeSquare(int row, int col, char currentPlayer)
 			//    :getSquareContents(int row, int col)
@@ -59,28 +82,26 @@ namespace TicTacToeTest
 			Assert::IsFalse(board.isSquareEmpty(1,1));
 		}
 
-
+		// ToDo - Exception handling - needs to be improved
 		TEST_METHOD(TestException) {
 			Logger::WriteMessage("Testing Exception handling in getSquareContents - throw invalid argument");
 			board.getSquareContents(3, 1);  // should throw an exception as 3 is invalid
 		}
 
 
+		// ToDo - Exception handling - needs to be improved
 		TEST_METHOD(InvalidMove) {
-			// :writeSquare(int row, int col, char currentPlayer)
-			// :getSquareContents(int row, int col)
-			// :isSquareEmpty(int row, int col) 
+			//  Methods used in the following test case:
+			//    :writeSquare(int row, int col, char currentPlayer)
+			//    :getSquareContents(int row, int col)
+			//    :isSquareEmpty(int row, int col) 
 			Logger::WriteMessage("Testing an invalid move 2,3\n");
 			Assert::IsTrue(board.isSquareEmpty(2, 3), L"Cell 2,3 is not empty");
 			board.writeSquare(2, 3, TicTacToeBoard::X);
 			Assert::AreEqual(board.getSquareContents(2, 3), 'X');
 			Assert::IsFalse(board.isSquareEmpty(2, 3));
 		}
-		TEST_METHOD(EarlyWinCheck) {
-			Logger::WriteMessage("Testing that X didn't win on move 1");
-			Assert::IsFalse(board.isWinner(TicTacToeBoard::X));
-			Assert::IsTrue(board.isSquareEmpty(0, 0), L"Square should be empty, but isn't");
-		}
+
 	}; 
 }
 
