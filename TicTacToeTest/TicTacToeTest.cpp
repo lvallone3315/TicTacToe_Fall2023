@@ -5,32 +5,80 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+// TicTacToe automated unit test example (starting place)
+//   ToDo: remove max board & column hardcoding (ideally - retrieve from source code)
+//   ToDo: more comments
+
 namespace TicTacToeTest
 {
 	TEST_CLASS(TicTacToeTest)
 	{
 	public:
-		TicTacToeBoard board;
-		TEST_CLASS_INITIALIZE(Board) {
-			// nothing to initialize at the momement
+		TicTacToeBoard board;   // declare board here so all test cases can access the board object
+		                        //   re-init prior to each test case (see below)
+
+		TEST_CLASS_INITIALIZE(BoardClassTest)
+		{
+			// this method is run once for the TicTacToeTest class
+			//    intentionally blank (other than the log message) - nothing to initialize at this time
+			Logger::WriteMessage("Test class initialized");
 		}
+
+		TEST_METHOD_INITIALIZE(TestSetup) {
+			// this method is run prior to EVERY test case inside the class (ie this file)
+			Logger::WriteMessage("Initializing Board object.\n");
+			board = TicTacToeBoard();          // reinitialize board
+		}
+
+		//                  ***   Unit tests ***
+		// 
+		//   verify X is first player after board initializes
+		//   methods (used in the following test case):
+		//      getPlayerName() - returns character representing player whose turn it is (should be 'X')
 		TEST_METHOD(GameStartPlayerX)
 		{
 			Logger::WriteMessage("Testing X is selected as first player\n");
+			// verify X is to play, O is NOT to play
 			Assert::AreEqual(board.getPlayerName(), 'X');
 			Assert::AreNotEqual(board.getPlayerName(), 'O');
 		}
 
-		TEST_METHOD(TestMoves) {
-			// :writeSquare(int row, int col, char currentPlayer)
-			// :getSquareContents(int row, int col)
-			// :isSquareEmpty(int row, int col) 
+
+		// Game start check - all squares should be empty & no-one has won
+		//   methods:
+		//      isWinner(player enum) - true if specified player has won, false in all other conditions
+		//      isSquareEmpty(row, column) - true if specified location is empty, range [0-2] for both row & column
+		TEST_METHOD(SquaresEmptyAndNoWonHasWon) {
+
+			Logger::WriteMessage("Game start: testing neither X or O has won\n");
+			Assert::IsFalse(board.isWinner(TicTacToeBoard::X), L"Game start: X should not have won");
+			Assert::IsFalse(board.isWinner(TicTacToeBoard::O), L"Game start: O should not have won");
+
+			Logger::WriteMessage("Verify all squares are empty\n");
+			for (int row = 0; row < 2; row++) {
+				for (int column = 0; column < 2; column++) {
+					Assert::IsTrue(board.isSquareEmpty(0, 0), L"Square should be empty, but isn't");
+				}
+			}  // end verifying all game squares empty
+		}
+
+		TEST_METHOD(TestRandomMoves) {
+			// Verify can mark a cell with a given player's move
+			//    approach - try both corners of the grid, and then one in the middle
+			//    row & column should be in range [0,2]
+			// Methods:
+			//    :writeSquare(int row, int col, char currentPlayer) - returns true if write successful, false otherwise
+			//    :getSquareContents(int row, int col) - if square marked, returns player character; blank otherwise
+			//    :isSquareEmpty(int row, int col) - true if the square is not marked, false otherwise
 			Logger::WriteMessage("Testing we can write X & O into different cells\n");
+
 			// write cell 0,0 & verify the cell is written correctly
+			// note: pre-condition check(s), action (e.g. write the square) & then post-action verification
+			Assert::AreEqual(' ', board.getSquareContents(0, 0), L"Expected a blank in 0,0, but received something else");
 			Assert::IsTrue(board.isSquareEmpty(0, 0));
 			board.writeSquare(0, 0, TicTacToeBoard::X);
 			Assert::AreEqual('X', board.getSquareContents(0, 0), L"Expected X in 0,0, but received something else");
-			Assert::IsFalse(board.isSquareEmpty(0, 0));
+			Assert::IsFalse(board.isSquareEmpty(0, 0), L"Expected square to have a non-blank, but shown as not empty");
 
 			// now test other extreme row 2, column 2, mix it up & write O into this square
 			Assert::IsTrue(board.isSquareEmpty(2, 2));
@@ -38,20 +86,26 @@ namespace TicTacToeTest
 			Assert::AreEqual('O', board.getSquareContents(2, 2), L"Expected O in 2,2, but received something else");
 			Assert::IsFalse(board.isSquareEmpty(2, 2));
 
-			// now test something int he middle - e.g. 1, 1
+			// now test something in the middle - e.g. 1, 1
 			Assert::IsTrue(board.isSquareEmpty(1, 1));
 			board.writeSquare(1,1, TicTacToeBoard::O);
 			Assert::AreEqual('O', board.getSquareContents(2, 2), L"Expected O in 1,1, but received something else");
 			Assert::IsFalse(board.isSquareEmpty(1,1));
 		}
+
+		// ToDo - Exception handling - needs to be improved
 		TEST_METHOD(TestException) {
 			Logger::WriteMessage("Testing Exception handling in getSquareContents - throw invalid argument");
 			board.getSquareContents(3, 1);  // should throw an exception as 3 is invalid
 		}
+
+
+		// ToDo - Exception handling - needs to be improved
 		TEST_METHOD(InvalidMove) {
-			// :writeSquare(int row, int col, char currentPlayer)
-			// :getSquareContents(int row, int col)
-			// :isSquareEmpty(int row, int col) 
+			//  Methods used in the following test case:
+			//    :writeSquare(int row, int col, char currentPlayer)
+			//    :getSquareContents(int row, int col)
+			//    :isSquareEmpty(int row, int col) 
 			Logger::WriteMessage("Testing an invalid move 2,3\n");
 			Assert::IsTrue(board.isSquareEmpty(2, 3), L"Cell 2,3 is not empty");
 			board.writeSquare(2, 3, TicTacToeBoard::X);
@@ -59,7 +113,7 @@ namespace TicTacToeTest
 			Assert::IsFalse(board.isSquareEmpty(2, 3));
 		}
 
-	};
+	}; 
 }
 
 /* Board class - method description
