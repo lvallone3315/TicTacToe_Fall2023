@@ -24,6 +24,9 @@
     <ClCompile Include="..\TicTacToe_Fall2023\TicTacToeBoard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AdditionalBoardTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
