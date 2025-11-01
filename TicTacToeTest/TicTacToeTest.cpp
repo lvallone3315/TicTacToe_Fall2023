@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 #include <iostream>
-#include "../TicTacToe_Fall2023/TicTacToeBoard.cpp"
+#include "../TicTacToe_Fall2023/TicTacToeBoard.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -17,14 +17,14 @@ namespace TicTacToeTest
 		TicTacToeBoard board;   // declare board here so all test cases can access the board object
 		                        //   re-init prior to each test case (see below)
 
-		TEST_CLASS_INITIALIZE(BoardClassTest)
+		TEST_CLASS_INITIALIZE(_Setup_BoardClassTest)
 		{
 			// this method is run once for the TicTacToeTest class
 			//    intentionally blank (other than the log message) - nothing to initialize at this time
 			Logger::WriteMessage("Test class initialized");
 		}
 
-		TEST_METHOD_INITIALIZE(TestSetup) {
+		TEST_METHOD_INITIALIZE(_Setup_MethodTest) {
 			// this method is run prior to EVERY test case inside the class (ie this file)
 			Logger::WriteMessage("Initializing Board object.\n");
 			board = TicTacToeBoard();          // reinitialize board
