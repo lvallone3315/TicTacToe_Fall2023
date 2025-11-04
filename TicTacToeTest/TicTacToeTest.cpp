@@ -21,7 +21,7 @@ namespace TicTacToeTest
 		{
 			// this method is run once for the TicTacToeTest class
 			//    intentionally blank (other than the log message) - nothing to initialize at this time
-			Logger::WriteMessage("Test class initialized");
+			Logger::WriteMessage("Test class initialized\n");
 		}
 
 		TEST_METHOD_INITIALIZE(_Setup_MethodTest) {
@@ -93,26 +93,55 @@ namespace TicTacToeTest
 			Assert::IsFalse(board.isSquareEmpty(1,1));
 		}
 
-		// ToDo - Exception handling - needs to be improved
-		TEST_METHOD(TestException) {
-			Logger::WriteMessage("Testing Exception handling in getSquareContents - throw invalid argument");
-			board.getSquareContents(3, 1);  // should throw an exception as 3 is invalid
+		// The following methods take range restricted arguments:
+		//   writeSquare (row [0:2], column [0:2], player - but this is an enum, can't go out of range)
+		//   isSquareEmpty (row [0:2], column [0:2])
+		//   getSquareContents(row [0:2], column [0:2], )
+		// 
+		// Need to test all for above upper bound and below lower bound (e.g. negative values)
+		//   
+		//   Note - squashed catch blocks after the first for readability
+		TEST_METHOD(Exception_Handling) {
+			//  first test writeSquare(row, column, player), valid ranges are row [0:2] & column [0:2]
+			try {
+				Logger::WriteMessage("\nTesting invalid row, 3, passed to writeSquare\n");
+				board.writeSquare(3, 0, TicTacToeBoard::X);
+				Assert::Fail(L"Expected std::invalid_argument not thrown");
+			}
+			catch (const std::invalid_argument& ex) {
+				Logger::WriteMessage(ex.what());
+			}
+			catch (...) {
+				Assert::Fail(L"Unexpected exception type thrown");
+			}
+
+			//  test getSquareContents(row, column), valid range [0:2][0:2], try way out of range, 2^16
+			try {
+				Logger::WriteMessage("\nTesting invalid column, 65536, passed to getSquareContents\n");
+				board.getSquareContents(0, 65536);
+				Assert::Fail(L"Expected std::invalid_argument not thrown");
+			}
+			catch (const std::invalid_argument& ex) { Logger::WriteMessage(ex.what());		}
+			catch (...) {							Assert::Fail(L"Unexpected exception type thrown");			}
+
+			// getSquareContents(row, column), test for negative values as well, e.g. [-1][0]
+			try {
+				Logger::WriteMessage("\nTesting invalid row, -1, passed to getSquareContents\n");
+				board.getSquareContents(-1, 0);
+				Assert::Fail(L"Expected std::invalid_argument not thrown");
+			}
+			catch (const std::invalid_argument& ex) { Logger::WriteMessage(ex.what()); }
+			catch (...) { Assert::Fail(L"Unexpected exception type thrown"); }
+			
+			// test isSquareEmpty(row, column)
+			try {
+				Logger::WriteMessage("\nTesting invalid row 3 & column 3, passed to isSquareEmpty\n"); 
+				board.isSquareEmpty(3, 3);
+				Assert::Fail(L"Expected std::invalid_argument not thrown");
+			}
+			catch (const std::invalid_argument& ex) {Logger::WriteMessage(ex.what());			}
+			catch (...) {				Assert::Fail(L"Unexpected exception type thrown");			}
 		}
-
-
-		// ToDo - Exception handling - needs to be improved
-		TEST_METHOD(InvalidMove) {
-			//  Methods used in the following test case:
-			//    :writeSquare(int row, int col, char currentPlayer)
-			//    :getSquareContents(int row, int col)
-			//    :isSquareEmpty(int row, int col) 
-			Logger::WriteMessage("Testing an invalid move 2,3\n");
-			Assert::IsTrue(board.isSquareEmpty(2, 3), L"Cell 2,3 is not empty");
-			board.writeSquare(2, 3, TicTacToeBoard::X);
-			Assert::AreEqual(board.getSquareContents(2, 3), 'X');
-			Assert::IsFalse(board.isSquareEmpty(2, 3));
-		}
-
 	}; 
 }
 
