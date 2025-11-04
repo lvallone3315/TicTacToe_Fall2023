@@ -7,7 +7,6 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 // TicTacToe automated unit test example (starting place)
 //   ToDo: remove max board & column hardcoding (ideally - retrieve from source code)
-//   ToDo: more comments
 
 namespace TicTacToeTest
 {
@@ -98,33 +97,39 @@ namespace TicTacToeTest
 		//   isSquareEmpty (row [0:2], column [0:2])
 		//   getSquareContents(row [0:2], column [0:2], )
 		// 
-		// Need to test all for above upper bound and below lower bound (e.g. negative values)
+		// All three methods should throw an invalid argument exception if the parameters are out of range
+		// 
+		// Need to test  for above upper bound and below lower bound (e.g. negative values)
 		//   
 		//   Note - squashed catch blocks after the first for readability
 		TEST_METHOD(Exception_Handling) {
-			//  first test writeSquare(row, column, player), valid ranges are row [0:2] & column [0:2]
+			//  writeSquare(row, column, player), valid ranges are row [0:2] & column [0:2]
 			try {
 				Logger::WriteMessage("\nTesting invalid row, 3, passed to writeSquare\n");
 				board.writeSquare(3, 0, TicTacToeBoard::X);
+				// the above should throw an exception, triggering the catch block
+				//    hence the Assert::Fail should never execute
 				Assert::Fail(L"Expected std::invalid_argument not thrown");
 			}
-			catch (const std::invalid_argument& ex) {
+			catch (const std::invalid_argument& ex) {  // catch invalid arg execption thrown
 				Logger::WriteMessage(ex.what());
 			}
-			catch (...) {
+			catch (...) {   // if a different exception is thrown, will end up here, and the test case will fail
 				Assert::Fail(L"Unexpected exception type thrown");
 			}
 
-			//  test getSquareContents(row, column), valid range [0:2][0:2], try way out of range, 2^16
+			//  getSquareContents(row, column), valid range [0:2][0:2]
+			//     far out of range, 2^16
 			try {
 				Logger::WriteMessage("\nTesting invalid column, 65536, passed to getSquareContents\n");
 				board.getSquareContents(0, 65536);
 				Assert::Fail(L"Expected std::invalid_argument not thrown");
 			}
 			catch (const std::invalid_argument& ex) { Logger::WriteMessage(ex.what());		}
-			catch (...) {							Assert::Fail(L"Unexpected exception type thrown");			}
+			catch (...) {	Assert::Fail(L"Unexpected exception type thrown");			}
 
-			// getSquareContents(row, column), test for negative values as well, e.g. [-1][0]
+			//  getSquareContents(row, column)
+			//     test for negative values as well, e.g. [-1][0]
 			try {
 				Logger::WriteMessage("\nTesting invalid row, -1, passed to getSquareContents\n");
 				board.getSquareContents(-1, 0);
@@ -133,7 +138,8 @@ namespace TicTacToeTest
 			catch (const std::invalid_argument& ex) { Logger::WriteMessage(ex.what()); }
 			catch (...) { Assert::Fail(L"Unexpected exception type thrown"); }
 			
-			// test isSquareEmpty(row, column)
+			// isSquareEmpty(row, column)
+			//     invalid row & column
 			try {
 				Logger::WriteMessage("\nTesting invalid row 3 & column 3, passed to isSquareEmpty\n"); 
 				board.isSquareEmpty(3, 3);
