@@ -4,25 +4,29 @@
  * \brief  board class - TicTacToeBoard
  *     Scope - all aspects of the board, including defining the # rows & columns, win conditions, current/starting player
  *        supports retrieving data elements for displaying the board
- * 
+ *
  * \author Lee
  * \date   updated: October 2025
- * 
+ *
  * Implementation notes:
  *     - Player enum is used for both the name of the player & for the player's move
  *     - lots of Technical debt in this implementation, including need to consistently use BOARD_NUM_ROWS and BOARD_NUM_COLS
- *     - the range for valid rows & columns is [0,2], all other values are invalid
- * 
+ *     - the range for valid rows & columns is [0,2], all other values are invalid (note: max = BOARD_NUM_... - 1)
+ *     - if row or column is out of range, all methods should throw an invalid argument exception
+ *
  * constructor                                 - initializes board via resetBoard() method
  * resetBoard()                                - initializes board & number of turns played in current game
- * bool isSquareEmpty(int row, int column)     - returns true = empty, false otherwise
- * bool writeSquare(int row, int column, Player player) - returns false if can’t write square
+ *                                               (note: no method currently implemented returns # of cells played)
+ * bool isSquareEmpty(int row, int column)     - returns true = square empty, false otherwise
+ * bool writeSquare(int row, int column, Player player) - if cell empty, writes enum into square & returns true, returns false if square !empty
  * char getSquareContents(int row, int column) - returns character in specified square (e.g. 'X', 'O', ' ')
+ * 
  * Player getPlayer()                          - returns player (enum) whose turn it is
  * char getPlayerName()                        - returns player (character) whose turn it is
- * Player nextPlayer()                         - returns Player (ie enum) of the next player (e.g. if O playing, returns X)
+ * Player nextPlayer()                         - swaps player whose turn it is &
+ *                                                 returns Player (ie enum) of the new player (e.g. if O playing, returns X)
  * bool isWinner(Player playerToCheck)         - true if the specified player has won, false otherwise
- * bool isDraw()                               - true if no-one has won, false otherwise (e.g. consider - no spaces empty) 
+ * bool isDraw()                               - true if no-one has won & no open squares, false otherwise (e.g. consider - no spaces empty)
  **/
 
 class TicTacToeBoard
