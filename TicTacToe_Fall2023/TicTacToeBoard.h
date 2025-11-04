@@ -44,7 +44,7 @@ public:
 	TicTacToeBoard();
 	void resetBoard();										// resets the squares to EMPTY as the # of turns played in the current game
 	bool isSquareEmpty(int row, int col) const;				// returns true if given space is empty, false if already occupied
-	bool writeSquare(int row, int col, Player currentPlayer);  // returns true if successfully written, false on failure
+	bool writeSquare(int row, int col, Player currentPlayer);  // returns true if successfully written, false on failure (e.g. space not empty)
 	char getSquareContents(int row, int col) const;       // used for displaying board, return player character
 	Player getPlayer() const;								// returns internal ID (ie enum) of the player
 	char getPlayerName() const;							  // returns name of the player - hardcoded as 'X' or 'O'
