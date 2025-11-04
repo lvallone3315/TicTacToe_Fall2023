@@ -27,7 +27,9 @@ namespace TicTacToeTest
 		TEST_METHOD_INITIALIZE(_Setup_MethodTest) {
 			// this method is run prior to EVERY test case inside the class (ie this file)
 			Logger::WriteMessage("Initializing Board object.\n");
-			board = TicTacToeBoard();          // reinitialize board
+			// reinitialize board
+			//   option to use board.resetBoard(), mimics starting new game after a previous win or draw
+			board = TicTacToeBoard();
 		}
 
 		//                  ***   Unit tests ***
