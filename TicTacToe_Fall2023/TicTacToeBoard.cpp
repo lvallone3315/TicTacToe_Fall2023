@@ -21,11 +21,6 @@
  *   Error handling
  *      For writeSquare() - returns true if update was successful, false if not (e.g. space already occupied)
  *      For all methods w/ row & column params - invalid argument exception thrown if params are out of range
- *  Pattern approach, row & column are mapped into a position [0,8]
- *    writeSquare() fills in legacy board[][], as well as tracking X & Os positions played (xMoves & oMoves)
- *    matchesWinningPattern() checks if any of the winning patterns (e.g. 0,4,8 - forward diagonal) is a subset of the player's moves
- *    isWinner() can be configured (via removing/adding the comment around the method call) either approach
- *      ToDo - maybe change this to a Feature Flag
  */
 
 // Constructor -- initialize all board spaces to empty, starting player intialized in .h file when memory allocated
@@ -41,9 +36,6 @@ void TicTacToeBoard::resetBoard() {
 			board[r][c] = EMPTY;
 		}
 	}
-	// clear the set of player moves (used in the pattern implementation of isWinner()
-	xMoves.clear();
-	oMoves.clear();
 }
 
 // If specified space is empty - return true
@@ -65,11 +57,6 @@ bool TicTacToeBoard::writeSquare(int row, int col, Player currentPlayer) {
 	if (this -> isSquareEmpty(row, col)) {
 		board[row][col] = currentPlayer;
 		takenSquareCount++;
-		// used for set based refactoring of win condition
-		if (currentPlayer == X)
-			xMoves.insert(rowColToPosition(row, col));
-		else
-			oMoves.insert(rowColToPosition(row, col));
 		return true;
 	}
 	else { // the space was already occupied, return false
@@ -110,8 +97,6 @@ TicTacToeBoard::Player TicTacToeBoard::nextPlayer() {
 //   Legacy version - exhaustive check - cell by cell
 //   Refactored version - define winning patterns & check those against the moves played
 bool TicTacToeBoard::isWinner(Player playerToCheck) const {
-
-	return matchesWinningPattern(playerToCheck);   // set based refactor
 
 	// check rows
 	for (int r = 0; r < BOARD_NUM_ROWS; r++) {
@@ -164,36 +149,4 @@ char TicTacToeBoard::playerMap(Player playerEnum) const {
 	default:
 		return ' ';
 	}
-}
-
-//                      Set based refactoring
-// the following set based code is based on LV's python design that implemented set based win checks
-//   for expediency, the implementation is based on code from chatgpt
-bool TicTacToeBoard::matchesWinningPattern(Player p) const {
-	const std::set<int>& moves = (p == X) ? xMoves : oMoves;   // select players individual moves
-
-	for (const auto& pattern : winPatterns) {
-		bool allFound = true;
-		// check all 3 positions for each pattern
-		for (int pos : pattern) {
-			if (moves.count(pos) == 0) {
-				allFound = false; // a position inside the pattern was not found in the player's moves
-				break;   // check the next pattern
-			}
-		}
-		if (allFound)
-			return true;
-	}
-
-	return false;   // no winner yet
-}
-
-// helper function to compute position from row & column
-// position numbering is row 0 -> 0, 1, 2 .... row 2 -> 6, 7, 8
-int TicTacToeBoard::rowColToPosition(int row, int column) {
-	if ((row >= BOARD_NUM_ROWS) || (column >= BOARD_NUM_COLS) || 
-		 (row < 0) || (column < 0)) {
-		throw std::invalid_argument("Invalid row or column passed to getSquareContents\n");
-	}
-	return row * BOARD_NUM_COLS + column;
 }
