@@ -6,7 +6,7 @@
  *        supports retrieving data elements for displaying the board
  *
  * \author Lee
- * \date   updated: October 2025
+ * \date   updated: November 2025
  *
  * Implementation notes:
  *     - Player enum is used for both the name of the player & for the player's move
@@ -52,9 +52,12 @@ public:
 	bool isWinner(Player playerToCheck) const;           // check if specified player has won
 	bool isDraw() const; // check if a draw
 
+
+
 private:  // reserve memory for board & current player
 	Player board[BOARD_NUM_ROWS][BOARD_NUM_COLS];      // board storage, indexed by row [0-2] and column [0-2]
 	Player player = INITIAL_PLAYER;                    // tracks the current player, ie next symbol placed
 	int takenSquareCount = 0;                        // # of spaces played in current game, reset for new games
 	char playerMap(Player playerEnum) const;		// map player enum to player character - ToDo - create mapping list rather than switch statement
+
 };

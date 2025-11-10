@@ -5,6 +5,9 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+// Some helpful notes
+//   Player enum values are referenced by TicTacToeBoard::O or TicTacToeBoard::X or TicTacToeBoard::EMPTY
+
 namespace TicTacToeTest
 {
 	TEST_CLASS(TicTacToeStudentAutomatedTests)
