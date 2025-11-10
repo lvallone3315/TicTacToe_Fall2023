@@ -72,6 +72,10 @@ namespace TicTacToeTest
 			Assert::AreNotEqual(board.getPlayerName(), 'O');
 		}
 
+		// 	the following tests the draw logic for one scenario
+		//   and verifies 
+		//      there is no draw up until the last square is filled in
+		//      neither X or O has won the game - at start, after the 8th move & after the final move
 		TEST_METHOD(TestDrawLV1) {
 			Logger::WriteMessage("Draw scenario - v1, all spaces marked, no one wins");
 			// verify no one has won & there isn't a draw
