@@ -6,7 +6,7 @@
  *        supports retrieving data elements for displaying the board
  *
  * \author Lee
- * \date   updated: October 2025
+ * \date   updated: November 2025
  *
  * Implementation notes:
  *     - Player enum is used for both the name of the player & for the player's move
@@ -29,6 +29,7 @@
  * bool isDraw()                               - true if no-one has won & no open squares, false otherwise (e.g. consider - no spaces empty)
  **/
 #include <set>
+#include <array>
 
 class TicTacToeBoard
 {
@@ -53,14 +54,32 @@ public:
 	bool isWinner(Player playerToCheck) const;           // check if specified player has won
 	bool isDraw() const; // check if a draw
 
+
+
 private:  // reserve memory for board & current player
 	Player board[BOARD_NUM_ROWS][BOARD_NUM_COLS];      // board storage, indexed by row [0-2] and column [0-2]
 	Player player = INITIAL_PLAYER;                    // tracks the current player, ie next symbol placed
 	int takenSquareCount = 0;                        // # of spaces played in current game, reset for new games
 	char playerMap(Player playerEnum) const;		// map player enum to player character - ToDo - create mapping list rather than switch statement
+
+	// the following data structures are used in a new approach to checking for a win
+	//   set based approach, where row & column are mapped into a 0-8 position
+	//   writeSquare() fills in legacy board[][], as well as tracking X & Os positions played
+	//   matchesWinningPattern() checks if any of the winning patterns (e.g. 0,4,8 - forward diagonal) is a subset of the player's moves
+	//     isWinner() via comment removal can be set to use the new approach
+	//
+	// Important!  the inline declaration below requires C++ v17 or newer, default in MS VS 2022 is v14
+	//   ToDo - move the initialization to the cpp file -> no inline declaration required, and can run in v14
 	std::set<int> xMoves;		// track X moves by position 0-8 for set based evaluation
 	std::set<int> oMoves;       // track O moves by position 0-8 for same
 
 	int rowColToPosition(int row, int column);       // helper function to compute a position # from a row & column
-	bool isWinnerSet(Player p) const;                      // new method to check if player p won based on set comparisons
+	bool matchesWinningPattern(Player p) const;                      // new method to check if player p won based on set comparisons
+
+	inline static constexpr  std::array<std::array<int, 3>, 8> winPatterns{ {
+		{{0,1,2}}, {{3, 4, 5}}, {{6,7,8}},    // rows
+		{{0,3,6}}, {{1, 4, 7}}, {{2,5,8}},    // columns
+		{{0,4,8}}, {{2,4,6}}                  // diagonals
+	} };
+
 };

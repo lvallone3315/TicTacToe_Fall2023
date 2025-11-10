@@ -6,10 +6,7 @@
 
 /*
  * ToDo - Validate row & columns everywhere  (highest priority - poor OO coding!!!
- * ToDo - create ENUM for players
  * ToDo - Separate player name from 'X' and 'O' characters - e.g. default player name to character, but then allow it to change
- * ToDo - Create mapping function from enum to display character
- * ToDo - create define or constant for Error returns
 */
 
 /*
@@ -19,6 +16,16 @@
  *   player - character indicating the player making the current move
  *     notes - default player defined in board class header file,
  *     current player is tracked and can be retrived by the board class, but is updated from outside the class via nextPlayer()
+ * 
+ * Notes
+ *   Error handling
+ *      For writeSquare() - returns true if update was successful, false if not (e.g. space already occupied)
+ *      For all methods w/ row & column params - invalid argument exception thrown if params are out of range
+ *  Pattern approach, row & column are mapped into a position [0,8]
+ *    writeSquare() fills in legacy board[][], as well as tracking X & Os positions played (xMoves & oMoves)
+ *    matchesWinningPattern() checks if any of the winning patterns (e.g. 0,4,8 - forward diagonal) is a subset of the player's moves
+ *    isWinner() can be configured (via removing/adding the comment around the method call) either approach
+ *      ToDo - maybe change this to a Feature Flag
  */
 
 // Constructor -- initialize all board spaces to empty, starting player intialized in .h file when memory allocated
@@ -34,6 +41,9 @@ void TicTacToeBoard::resetBoard() {
 			board[r][c] = EMPTY;
 		}
 	}
+	// clear the set of player moves (used in the pattern implementation of isWinner()
+	xMoves.clear();
+	oMoves.clear();
 }
 
 // If specified space is empty - return true
@@ -45,6 +55,7 @@ bool TicTacToeBoard::isSquareEmpty(int row, int col) const {
 }
 
 // Updates space to the player (marker) specified, return false if space not empty
+//   intentional arg check issue
 bool TicTacToeBoard::writeSquare(int row, int col, Player currentPlayer) {
 	if ((row >= BOARD_NUM_ROWS) || (col >= BOARD_NUM_COLS)) {
 		// note: if we get here, everything after the above throw line is skipped — it never runs.
@@ -67,6 +78,7 @@ bool TicTacToeBoard::writeSquare(int row, int col, Player currentPlayer) {
 }
 
 // Returns character (ie player marker) in the given row/col, throws exception if args invalid
+//    another intentional arg check failure
 char TicTacToeBoard::getSquareContents(int row, int col) const {
 	if ((row >= BOARD_NUM_ROWS) || (col >= BOARD_NUM_COLS)) {
 		throw std::invalid_argument("Invalid row or column passed to getSquareContents\n");
@@ -95,10 +107,11 @@ TicTacToeBoard::Player TicTacToeBoard::nextPlayer() {
 }
 
 // Return true if specified player has won the game
-//   ToDo - tighten up this check - works but could be cleaner
+//   Legacy version - exhaustive check - cell by cell
+//   Refactored version - define winning patterns & check those against the moves played
 bool TicTacToeBoard::isWinner(Player playerToCheck) const {
 
-	// return isWinnerSet(playerToCheck);   // set based refactor
+	return matchesWinningPattern(playerToCheck);   // set based refactor
 
 	// check rows
 	for (int r = 0; r < BOARD_NUM_ROWS; r++) {
@@ -156,16 +169,10 @@ char TicTacToeBoard::playerMap(Player playerEnum) const {
 //                      Set based refactoring
 // the following set based code is based on LV's python design that implemented set based win checks
 //   for expediency, the implementation is based on code from chatgpt
-bool TicTacToeBoard::isWinnerSet(Player p) const {
+bool TicTacToeBoard::matchesWinningPattern(Player p) const {
 	const std::set<int>& moves = (p == X) ? xMoves : oMoves;   // select players individual moves
 
-	static const std::array<std::array<int, 3>, 8> patterns{ {
-		{{0,1,2}}, {{3, 4, 5}}, {{6,7,8}},    // rows
-		{{0,3,6}}, {{1, 4, 7}}, {{2,5,8}},    // columns
-		{{0,4,8}}, {{2,4,6}}                  // diagonals
-	} };
-
-	for (const auto& pattern : patterns) {
+	for (const auto& pattern : winPatterns) {
 		bool allFound = true;
 		// check all 3 positions for each pattern
 		for (int pos : pattern) {
