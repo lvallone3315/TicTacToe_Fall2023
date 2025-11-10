@@ -1,6 +1,8 @@
 #include "TicTacToeBoard.h"
 #include <iostream>
 #include <stdlib.h>
+#include <array>    // set refactor
+#include <algorithm>  // set refactor
 
 /*
  * ToDo - Validate row & columns everywhere  (highest priority - poor OO coding!!!
@@ -52,6 +54,11 @@ bool TicTacToeBoard::writeSquare(int row, int col, Player currentPlayer) {
 	if (this -> isSquareEmpty(row, col)) {
 		board[row][col] = currentPlayer;
 		takenSquareCount++;
+		// used for set based refactoring of win condition
+		if (currentPlayer == X)
+			xMoves.insert(rowColToPosition(row, col));
+		else
+			oMoves.insert(rowColToPosition(row, col));
 		return true;
 	}
 	else { // the space was already occupied, return false
@@ -90,6 +97,9 @@ TicTacToeBoard::Player TicTacToeBoard::nextPlayer() {
 // Return true if specified player has won the game
 //   ToDo - tighten up this check - works but could be cleaner
 bool TicTacToeBoard::isWinner(Player playerToCheck) const {
+
+	// return isWinnerSet(playerToCheck);   // set based refactor
+
 	// check rows
 	for (int r = 0; r < BOARD_NUM_ROWS; r++) {
 		if ((board[r][0] == playerToCheck) &&
@@ -141,4 +151,42 @@ char TicTacToeBoard::playerMap(Player playerEnum) const {
 	default:
 		return ' ';
 	}
+}
+
+//                      Set based refactoring
+// the following set based code is based on LV's python design that implemented set based win checks
+//   for expediency, the implementation is based on code from chatgpt
+bool TicTacToeBoard::isWinnerSet(Player p) const {
+	const std::set<int>& moves = (p == X) ? xMoves : oMoves;   // select players individual moves
+
+	static const std::array<std::array<int, 3>, 8> patterns{ {
+		{{0,1,2}}, {{3, 4, 5}}, {{6,7,8}},    // rows
+		{{0,3,6}}, {{1, 4, 7}}, {{2,5,8}},    // columns
+		{{0,4,8}}, {{2,4,6}}                  // diagonals
+	} };
+
+	for (const auto& pattern : patterns) {
+		bool allFound = true;
+		// check all 3 positions for each pattern
+		for (int pos : pattern) {
+			if (moves.count(pos) == 0) {
+				allFound = false; // a position inside the pattern was not found in the player's moves
+				break;   // check the next pattern
+			}
+		}
+		if (allFound)
+			return true;
+	}
+
+	return false;   // no winner yet
+}
+
+// helper function to compute position from row & column
+// position numbering is row 0 -> 0, 1, 2 .... row 2 -> 6, 7, 8
+int TicTacToeBoard::rowColToPosition(int row, int column) {
+	if ((row >= BOARD_NUM_ROWS) || (column >= BOARD_NUM_COLS) || 
+		 (row < 0) || (column < 0)) {
+		throw std::invalid_argument("Invalid row or column passed to getSquareContents\n");
+	}
+	return row * BOARD_NUM_COLS + column;
 }
