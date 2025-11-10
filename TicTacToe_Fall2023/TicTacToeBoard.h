@@ -28,6 +28,7 @@
  * bool isWinner(Player playerToCheck)         - true if the specified player has won, false otherwise
  * bool isDraw()                               - true if no-one has won & no open squares, false otherwise (e.g. consider - no spaces empty)
  **/
+#include <set>
 
 class TicTacToeBoard
 {
@@ -57,4 +58,9 @@ private:  // reserve memory for board & current player
 	Player player = INITIAL_PLAYER;                    // tracks the current player, ie next symbol placed
 	int takenSquareCount = 0;                        // # of spaces played in current game, reset for new games
 	char playerMap(Player playerEnum) const;		// map player enum to player character - ToDo - create mapping list rather than switch statement
+	std::set<int> xMoves;		// track X moves by position 0-8 for set based evaluation
+	std::set<int> oMoves;       // track O moves by position 0-8 for same
+
+	int rowColToPosition(int row, int column);       // helper function to compute a position # from a row & column
+	bool isWinnerSet(Player p) const;                      // new method to check if player p won based on set comparisons
 };
