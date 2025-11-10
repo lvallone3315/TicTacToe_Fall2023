@@ -17,6 +17,20 @@ jobs:
       run: msbuild TicTacToe2023.sln /p:Configuration=Debug /m
 
     - name: Run native C++ tests
-      run: >
-        "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform\vstest.console.exe"
-        TicTacToe_Fall2023\Debug\TicTacToe_Fall2023.dll
+      shell: pwsh
+      run: |
+        # Find vstest.console.exe (Enterprise or Professional)
+        $vstest = Get-ChildItem -Recurse "C:\Program Files (x86)\Microsoft Visual Studio\" -Filter vstest.console.exe | Select-Object -First 1
+        if (-not $vstest) {
+          throw "Could not find vstest.console.exe!"
+        }
+
+        # Find the compiled test DLL (x86/x64, Debug/Release)
+        $dll = Get-ChildItem -Recurse -Filter TicTacToeTest.dll | Select-Object -First 1
+        if (-not $dll) {
+          throw "Test DLL not found! Did the project build succeed?"
+        }
+
+        Write-Host "Running tests from $($dll.FullName)"
+        & "$($vstest.FullName)" "$($dll.FullName)"
+
