@@ -1,0 +1,36 @@
+name: Build & Test (VS 2022)
+
+on:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Build solution
+      run: msbuild TicTacToe2023.sln /p:Configuration=Debug /m
+
+    - name: Run native C++ tests
+      shell: pwsh
+      run: |
+        # Find vstest.console.exe (Enterprise or Professional)
+        $vstest = Get-ChildItem -Recurse "C:\Program Files (x86)\Microsoft Visual Studio\" -Filter vstest.console.exe | Select-Object -First 1
+        if (-not $vstest) {
+          throw "Could not find vstest.console.exe!"
+        }
+
+        # Find the compiled test DLL (x86/x64, Debug/Release)
+        $dll = Get-ChildItem -Recurse -Filter TicTacToeTest.dll | Select-Object -First 1
+        if (-not $dll) {
+          throw "Test DLL not found! Did the project build succeed?"
+        }
+
+        Write-Host "Running tests from $($dll.FullName)"
+        & "$($vstest.FullName)" "$($dll.FullName)"
+
