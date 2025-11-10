@@ -1,8 +1,6 @@
 #include "TicTacToeBoard.h"
 #include <iostream>
 #include <stdlib.h>
-#include <array>    // set refactor
-#include <algorithm>  // set refactor
 
 /*
  * ToDo - Validate row & columns everywhere  (highest priority - poor OO coding!!!
@@ -95,7 +93,6 @@ TicTacToeBoard::Player TicTacToeBoard::nextPlayer() {
 
 // Return true if specified player has won the game
 //   Legacy version - exhaustive check - cell by cell
-//   Refactored version - define winning patterns & check those against the moves played
 bool TicTacToeBoard::isWinner(Player playerToCheck) const {
 
 	// check rows

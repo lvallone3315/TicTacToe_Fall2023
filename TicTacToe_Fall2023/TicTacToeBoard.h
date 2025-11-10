@@ -28,8 +28,6 @@
  * bool isWinner(Player playerToCheck)         - true if the specified player has won, false otherwise
  * bool isDraw()                               - true if no-one has won & no open squares, false otherwise (e.g. consider - no spaces empty)
  **/
-#include <set>
-#include <array>
 
 class TicTacToeBoard
 {
