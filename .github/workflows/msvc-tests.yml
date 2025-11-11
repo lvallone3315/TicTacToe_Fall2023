@@ -3,8 +3,8 @@ name: Build and Test TicTacToe
 on:
   push:
     branches: ['**']
-  pull_request:
-    branches: ['**']
+  # pull_request:
+    # branches: ['**']
 
 jobs:
   build-and-test:
@@ -38,10 +38,10 @@ jobs:
           # Define output directory for the test results
           $resultsDir = "TestResults"
           New-Item -ItemType Directory -Path $resultsDir -Force | Out-Null
-          $trxFile = Join-Path $resultsDir "TicTacToeTest.trx"
+          $trxFile = "$resultsDir\TicTacToeTest.trx"
       
           # Run the tests
-          & "$vstestPath" "$($dll.FullName)" "/logger:trx;LogFileName=$trxFile" "/logger:console;verbosity=detailed"
+          & "$vstestPath" "$($dll.FullName)" "/logger:trx;LogFileName=$trxFile"
 
       - name: Publish test results
         uses: actions/upload-artifact@v4
