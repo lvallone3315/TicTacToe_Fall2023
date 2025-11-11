@@ -26,11 +26,22 @@ jobs:
       - name: Locate and run native C++ tests
         shell: pwsh
         run: |
+          # Find the compiled test DLL
           $dll = Get-ChildItem -Recurse -Filter TicTacToeTest.dll | Select-Object -First 1
           if (-not $dll) { throw "Test DLL not found! Did the project build succeed?" }
-
+      
           Write-Host "Running tests from $($dll.FullName)"
-          & "run: '"C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow\\vstest.console.exe" "$($dll.FullName)" /logger:trx
+      
+          # Hardcoded path to vstest.console.exe
+          $vstestPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe"
+      
+          # Define output directory for the test results
+          $resultsDir = "$env:GITHUB_WORKSPACE\TestResults"
+          New-Item -ItemType Directory -Path $resultsDir -Force | Out-Null
+          $trxFile = Join-Path $resultsDir "TicTacToeTest.trx"
+      
+          # Run the tests
+          & "$vstestPath" "$($dll.FullName)" /logger:trx;LogFileName="$trxFile"
 
       - name: Publish test results
         uses: actions/upload-artifact@v4
