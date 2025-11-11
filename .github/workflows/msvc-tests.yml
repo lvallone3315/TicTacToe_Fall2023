@@ -23,30 +23,28 @@ jobs:
       - name: Build solution
         run: msbuild TicTacToe_Fall2023.sln /p:Configuration=Debug /m
 
-      - name: Locate and run native C++ tests
+      - name: Run native C++ tests and show failed cases
         shell: pwsh
         run: |
-          # Find the compiled test DLL
           $dll = Get-ChildItem -Recurse -Filter TicTacToeTest.dll | Select-Object -First 1
           if (-not $dll) { throw "Test DLL not found! Did the project build succeed?" }
       
-          Write-Host "Running tests from $($dll.FullName)"
-      
-          # Hardcoded path to vstest.console.exe
           $vstestPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe"
       
-          # Define output directory for the test results
-          $resultsDir = "$env:GITHUB_WORKSPACE\TestResults"
-          New-Item -ItemType Directory -Path $resultsDir -Force | Out-Null
-          
-          # TRX output file path
-          $trxFile = Join-Path $resultsDir "TicTacToeTest.trx"
-          
-          # Run the tests with only the TRX logger
-          & "$vstestPath" "$($dll.FullName)" "/logger:trx;LogFileName=TicTacToeTest.trx" /ResultsDirectory:$resultsDir
-
-      - name: Publish test results
-        uses: actions/upload-artifact@v4
-        with:
-          name: TicTacToeTest-results
-          path: TestResults/TicTacToeTest.trx
+          Write-Host "Running tests from $($dll.FullName)`n"
+      
+          # Run tests and capture output
+          $output = & "$vstestPath" "$($dll.FullName)" /logger:console /TestAdapterPath:"$env:GITHUB_WORKSPACE" 2>&1
+      
+          # Print full output for context
+          Write-Host $output
+      
+          # Extract failed test cases
+          $failed = $output | Select-String -Pattern 'Failed' 
+          if ($failed) {
+              Write-Host "`n========== FAILED TEST CASES ==========" -ForegroundColor Red
+              $failed | ForEach-Object { Write-Host $_.Line -ForegroundColor Red }
+              throw "Some tests failed"
+          } else {
+              Write-Host "`nAll tests passed! ✅" -ForegroundColor Green
+          }
