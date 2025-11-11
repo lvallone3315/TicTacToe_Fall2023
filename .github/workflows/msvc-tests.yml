@@ -29,8 +29,8 @@ jobs:
         with:
           name: TicTacToe-Executable
           path: |
-            **/TicTacToe.exe
-            **/Debug/*.exe
+            # **/TicTacToe.exe
+            # **/Debug/*.exe
             **/Release/*.exe
 
       - name: Run native C++ tests and show failed cases
