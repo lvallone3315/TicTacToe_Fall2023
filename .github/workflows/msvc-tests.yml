@@ -23,9 +23,6 @@ jobs:
       - name: Build solution
         run: msbuild TicTacToe_Fall2023.sln /p:Configuration=Debug /m
 
-      - name: Check VSTest location (for debugging)
-        run: where.exe vstest.console.exe
-
       - name: Locate and run native C++ tests
         shell: pwsh
         run: |
