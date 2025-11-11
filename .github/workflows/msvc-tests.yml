@@ -41,7 +41,7 @@ jobs:
           $trxFile = Join-Path $resultsDir "TicTacToeTest.trx"
       
           # Run the tests
-          & "$vstestPath" "$($dll.FullName)" "/logger:trx;LogFileName=`"$trxFile`"" "/logger:console;verbosity=detailed"
+          & "$vstestPath" "$($dll.FullName)" "/logger:trx;LogFileName=$trxFile" "/logger:console;verbosity=detailed"
 
       - name: Publish test results
         uses: actions/upload-artifact@v4
