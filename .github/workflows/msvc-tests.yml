@@ -17,8 +17,8 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
 
-      - name: Restore NuGet packages
-        run: nuget restore TicTacToe_Fall2023.sln
+      # - name: Restore NuGet packages
+      #   run: nuget restore TicTacToe_Fall2023.sln
 
       - name: Build solution
         run: msbuild TicTacToe_Fall2023.sln /p:Configuration=Debug /m
