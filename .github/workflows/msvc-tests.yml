@@ -23,6 +23,16 @@ jobs:
       - name: Build solution
         run: msbuild TicTacToe_Fall2023.sln /p:Configuration=Debug /m
 
+        # Locate and upload the executable
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: TicTacToe-Executable
+          path: |
+            **/TicTacToe.exe
+            **/Debug/*.exe
+            **/Release/*.exe
+
       - name: Run native C++ tests and show failed cases
         shell: pwsh
         run: |
