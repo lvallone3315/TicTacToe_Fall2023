@@ -14,7 +14,7 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
 
     - name: Build solution
-      run: msbuild TicTacToe2023.sln /p:Configuration=Debug /m
+      run: msbuild TicTacToe_Fall2023.sln /p:Configuration=Debug /m
 
     - name: Run native C++ tests
       shell: pwsh
