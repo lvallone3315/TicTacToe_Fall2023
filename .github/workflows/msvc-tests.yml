@@ -2,53 +2,41 @@ name: Build and Test TicTacToe
 
 on:
   push:
-    branches: [ '**' ]       # Runs on push to any branch
+    branches: ['**']
   pull_request:
-    branches: [ '**' ]       # Runs on any PR
+    branches: ['**']
 
 jobs:
   build-and-test:
     runs-on: windows-2022
 
     steps:
-      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Setup MSBuild tools
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
 
-      # 3. Restore NuGet packages (if applicable)
       - name: Restore NuGet packages
         run: nuget restore TicTacToe_Fall2023.sln
 
-      # 4. Build the solution
       - name: Build solution
         run: msbuild TicTacToe_Fall2023.sln /p:Configuration=Debug /m
 
-      # 5. Run native C++ tests using VsTest
-      - name: Run tests
-        uses: microsoft/vstest@v1
-        with:
-          testAssembly: '**\TicTacToeTest.dll'  # Automatically finds the test DLL
-          platform: 'x64'
-          configuration: 'Debug'
-          runSettings: |
-            <RunSettings>
-              <RunConfiguration>
-                <ResultsDirectory>TestResults</ResultsDirectory>
-                <MaxCpuCount>0</MaxCpuCount>
-                <TargetPlatform>x64</TargetPlatform>
-                <TargetFrameworkVersion>Framework45</TargetFrameworkVersion>
-                <DisableAppDomain>true</DisableAppDomain>
-              </RunConfiguration>
-            </RunSettings>
-          diag: 'TestResults\VSTestDiag.log'  # Diagnostic log for debugging
+      - name: Locate and run native C++ tests
+        shell: pwsh
+        run: |
+          $vstest = Get-ChildItem -Recurse "C:\Program Files (x86)\Microsoft Visual Studio\" -Filter vstest.console.exe | Select-Object -First 1
+          if (-not $vstest) { throw "Could not find vstest.console.exe!" }
 
-      # 6. Upload test results to GitHub Actions
+          $dll = Get-ChildItem -Recurse -Filter TicTacToeTest.dll | Select-Object -First 1
+          if (-not $dll) { throw "Test DLL not found! Did the project build succeed?" }
+
+          Write-Host "Running tests from $($dll.FullName)"
+          & "$($vstest.FullName)" "$($dll.FullName)" /logger:trx
+
       - name: Publish test results
         uses: actions/upload-artifact@v4
         with:
           name: TestResults
-          path: TestResults
+          path: '**/*.trx'
