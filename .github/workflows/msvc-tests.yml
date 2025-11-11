@@ -36,7 +36,7 @@ jobs:
           $vstestPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe"
       
           # Define output directory for the test results
-          $resultsDir = "$env:GITHUB_WORKSPACE\TestResults"
+          $resultsDir = "TestResults"
           New-Item -ItemType Directory -Path $resultsDir -Force | Out-Null
           $trxFile = Join-Path $resultsDir "TicTacToeTest.trx"
       
