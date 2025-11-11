@@ -155,6 +155,7 @@ namespace TicTacToeTest
 		// scenario:   -  -  O
 		//             -  -  O
 		//             -  -  O
+		//
 		TEST_METHOD(TestWinO_Column2_LV) {
 			Logger::WriteMessage("Testing O winning in 2nd column, no moves by X");
 			// reset the board & verify no winner and no draw

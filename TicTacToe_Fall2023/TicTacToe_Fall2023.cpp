@@ -7,7 +7,7 @@
 
 #define MAX_CHARS 128     // max size of the user output buffer
 
-char GAME_VERSION[MAX_CHARS] = "Version: 2025 v1.1\n";
+char GAME_VERSION[MAX_CHARS] = "Version: 2025 v1.2\n";
 
 // User Messages - format intended for sprintf_s
 //   ToDo - mark as constants
