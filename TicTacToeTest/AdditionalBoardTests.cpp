@@ -150,5 +150,24 @@ namespace TicTacToeTest
 			Assert::IsFalse(board.isWinner(TicTacToeBoard::O), L"Expecting only X has won, not O, but showing O won");
 			Assert::IsFalse(board.isDraw(), L"Expecting no draw since X won, but isDraw returned true!");
 		}
+
+		// Testing O winning a game in column 2, no moves by X
+		// scenario:   -  -  O
+		//             -  -  O
+		//             -  -  O
+		TEST_METHOD(TestWinO_Column2_LV) {
+			Logger::WriteMessage("Testing O winning in 2nd column, no moves by X");
+			// reset the board & verify no winner and no draw
+			board.resetBoard();
+			Assert::IsFalse(board.isWinner(TicTacToeBoard::X), L"board reset, but X showing as winner");
+			Assert::IsFalse(board.isWinner(TicTacToeBoard::O), L"board reset, but O showing as winner");
+			Assert::IsFalse(board.isDraw(), L"board reset, but game showing a draw");
+			board.writeSquare(2, 2, TicTacToeBoard::O);  // for grins start from bottom of game grid
+			board.writeSquare(1, 2, TicTacToeBoard::O);
+			board.writeSquare(0, 2, TicTacToeBoard::O);
+			Assert::IsFalse(board.isWinner(TicTacToeBoard::X), L"expected O to win, but X showing as a winner");
+			Assert::IsTrue(board.isWinner(TicTacToeBoard::O), L"expecting O to win, but isWinner() returned false for O");
+			Assert::IsFalse(board.isDraw(), L"game showing a draw, but only 3 moves!");
+		}
 	};
 }
