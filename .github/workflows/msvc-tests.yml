@@ -1,36 +1,42 @@
-name: Build & Test (VS 2022)
+name: Build and Test C++ on Windows
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
 
 jobs:
   build-and-test:
     runs-on: windows-latest
 
     steps:
+    # 1️ Checkout repo
     - uses: actions/checkout@v3
 
-    - name: Setup MSVC
-      uses: ilammy/msvc-dev-cmd@v1
+    # 2️ Setup MSVC environment
+    - uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+        vs-version: latest
 
-    - name: Build solution
+    # 3️ Build the solution
+    - name: Build TicTacToe solution
       run: msbuild TicTacToe_Fall2023.sln /p:Configuration=Debug /m
 
-    - name: Run native C++ tests
+    # 4️ Find vstest.console.exe
+    - name: Find vstest.console.exe
       shell: pwsh
       run: |
-        # Find vstest.console.exe (Enterprise or Professional)
-        $vstest = Get-ChildItem -Recurse "C:\Program Files (x86)\Microsoft Visual Studio\" -Filter vstest.console.exe | Select-Object -First 1
-        if (-not $vstest) {
-          throw "Could not find vstest.console.exe!"
-        }
+        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        $vs = & $vswhere -latest -products * -requires Microsoft.Component.TestTools.BuildTools -property installationPath
+        $vstest = Join-Path $vs "Common7\IDE\Extensions\TestPlatform\vstest.console.exe"
+        if (!(Test-Path $vstest)) { throw "Could not find vstest.console.exe!" }
+        Write-Output "vstest.console.exe found at $vstest"
+        echo "VSTEST=$vstest" >> $env:GITHUB_ENV
 
-        # Find the compiled test DLL (x86/x64, Debug/Release)
-        $dll = Get-ChildItem -Recurse -Filter TicTacToeTest.dll | Select-Object -First 1
-        if (-not $dll) {
-          throw "Test DLL not found! Did the project build succeed?"
-        }
-
-        Write-Host "Running tests from $($dll.FullName)"
-        & "$($vstest.FullName)" "$($dll.FullName)"
-
+    # 5️ Run the native C++ tests
+    - name: Run TicTacToe tests
+      working-directory: TicTacToeTest
+      run: |
+        "$env:VSTEST" Debug\TicTacToe2023Test.exe /logger:trx
