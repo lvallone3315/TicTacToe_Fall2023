@@ -1,4 +1,4 @@
-name: Build and Test C++ on Windows
+name: Build and Test TicTacToe
 
 on:
   push:
@@ -8,35 +8,37 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
-    # 1️ Checkout repo
-    - uses: actions/checkout@v3
+      # 1. Check out the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    # 2️ Setup MSVC environment
-    - uses: ilammy/msvc-dev-cmd@v1
-      with:
-        arch: x64
-        vs-version: latest
+      # 2. Setup MSBuild environment
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
 
-    # 3️ Build the solution
-    - name: Build TicTacToe solution
-      run: msbuild TicTacToe_Fall2023.sln /p:Configuration=Debug /m
+      # 3. Restore NuGet packages if needed
+      - name: Restore NuGet packages
+        run: nuget restore TicTacToe_Fall2023.sln
 
-    # 4️ Find vstest.console.exe
-    - name: Find vstest.console.exe
-      shell: pwsh
-      run: |
-        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-        $vs = & $vswhere -latest -products * -requires Microsoft.Component.TestTools.BuildTools -property installationPath
-        $vstest = Join-Path $vs "Common7\IDE\Extensions\TestPlatform\vstest.console.exe"
-        if (!(Test-Path $vstest)) { throw "Could not find vstest.console.exe!" }
-        Write-Output "vstest.console.exe found at $vstest"
-        echo "VSTEST=$vstest" >> $env:GITHUB_ENV
+      # 4. Build the solution in Debug mode
+      - name: Build solution
+        run: msbuild TicTacToe_Fall2023.sln /p:Configuration=Debug /m
 
-    # 5️ Run the native C++ tests
-    - name: Run TicTacToe tests
-      working-directory: TicTacToeTest
-      run: |
-        "$env:VSTEST" Debug\TicTacToe2023Test.exe /logger:trx
+      # 5. Install Microsoft Test Platform (vstest) via NuGet
+      - name: Install Microsoft Test Platform
+        run: nuget install Microsoft.TestPlatform -Version 17.9.0 -OutputDirectory testrunner
+
+      # 6. Run the native C++ test DLL
+      - name: Run C++ tests
+        run: |
+          $vstest = Get-ChildItem -Recurse "testrunner\Microsoft.TestPlatform.*\tools\net472\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe" | Select-Object -First 1
+          if (-not $vstest) { throw "vstest.console.exe not found!" }
+
+          $dll = Get-ChildItem -Recurse -Filter TicTacToeTest.dll | Select-Object -First 1
+          if (-not $dll) { throw "Test DLL not found!" }
+
+          Write-Host "Running tests from $($dll.FullName)"
+          & "$($vstest.FullName)" "$($dll.FullName)"
