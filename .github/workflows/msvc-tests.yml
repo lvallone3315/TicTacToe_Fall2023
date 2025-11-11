@@ -17,14 +17,11 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
 
-      # - name: Restore NuGet packages
+      # - name: Restore NuGet packages (not needed)
       #   run: nuget restore TicTacToe_Fall2023.sln
 
       - name: Build solution
         run: msbuild TicTacToe_Fall2023.sln /p:Configuration=Debug /m
-        
-      - name: Build Release
-        run: msbuild TicTacToe_Fall2023.sln /p:Configuration=Release
 
         # Locate and upload the executable
       - name: Upload executable
@@ -35,6 +32,13 @@ jobs:
             **/TicTacToe.exe
             **/Debug/*.exe
             **/Release/*.exe
+
+      # alternative upload approach to just upload a release version (note: release version has other issues)
+      # - name: Upload Release executable
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: TicTacToe-Release
+      #    path: TicTacToe_Fall2023\x64\Release\*.exe
 
       - name: Run native C++ tests and show failed cases
         shell: pwsh
