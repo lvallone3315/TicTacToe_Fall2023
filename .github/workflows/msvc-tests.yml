@@ -38,7 +38,7 @@ jobs:
           # Define output directory for the test results
           $resultsDir = "$env:GITHUB_WORKSPACE\TestResults"
           New-Item -ItemType Directory -Path $resultsDir -Force | Out-Null
-          & "$vstestPath" "$($dll.FullName)" "/logger:trx;LogFileName:$trxFile"
+          $trxFile = Join-Path $resultsDir "TicTacToeTest.trx"
       
           # Run the tests
           & "$vstestPath" "$($dll.FullName)" /logger:trx;LogFileName="$trxFile"
