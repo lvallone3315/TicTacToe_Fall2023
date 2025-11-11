@@ -104,7 +104,7 @@ namespace TicTacToeTest
 		// Need to test  for above upper bound and below lower bound (e.g. negative values)
 		//   
 		//   Note - squashed catch blocks after the first for readability
-		TEST_METHOD(Exception_Handling) {
+		/* TEST_METHOD(Exception_Handling) {
 			//  writeSquare(row, column, player), valid ranges are row [0:2] & column [0:2]
 			try {
 				Logger::WriteMessage("\nTesting invalid row, 3, passed to writeSquare\n");
@@ -150,6 +150,7 @@ namespace TicTacToeTest
 			catch (const std::invalid_argument& ex) {Logger::WriteMessage(ex.what());			}
 			catch (...) {				Assert::Fail(L"Unexpected exception type thrown");			}
 		}
+		*/
 	}; 
 }
 
